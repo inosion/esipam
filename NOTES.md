@@ -27,3 +27,9 @@ Research on which CIDR library to use
 Looking for an equivalent to Pythons `pytricia`
 - The best is to use trie-db from Paritytech
 - `radix` is a model - but it is too immature  - https://github.com/refraction-networking/radix
+
+## Feature Ideas
+- Write a Schema
+- Validation of Attributes
+- Complex Queries for locating
+

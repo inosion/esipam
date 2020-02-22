@@ -5,6 +5,7 @@ use std::net::{Ipv4Addr, Ipv6Addr, IpAddr};
 use uuid::Uuid;
 use std::mem;
 
+use ipnetwork::Ipv4Network;
 
 #[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Label {
@@ -35,7 +36,7 @@ impl Default for IpamConfig {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct CidrV4Entry {
-    pub cidr: ipnetwork::Ipv4Network,
+    pub cidr: Ipv4Network,
     pub id: String,
     pub uuid: Uuid,
     pub sysref: Option<String>,
@@ -53,16 +54,16 @@ impl Default for CidrV4Entry {
 
 impl CidrV4Entry { 
     fn new(cidr: String) -> Self {
-        let thecidr: ipnetwork::Ipv4Network = cidr.parse().unwrap();
+        let thecidr: Ipv4Network = cidr.parse().unwrap();
         CidrV4Entry::new_from_ipnet(thecidr)
     }
 
 
     fn new_from_stdipv4(i: Ipv4Addr) -> Self {
-        CidrV4Entry::new_from_ipnet(ipnetwork::Ipv4Network::from(i))
+        CidrV4Entry::new_from_ipnet(Ipv4Network::from(i))
     }
 
-    fn new_from_ipnet(i: ipnetwork::Ipv4Network) -> Self {
+    fn new_from_ipnet(i: Ipv4Network) -> Self {
         let theuuid = Uuid::new_v4();
 
         CidrV4Entry {
@@ -97,7 +98,8 @@ impl IpamV4 {
     fn new(an_id: String) -> Self {
         IpamV4 { 
             id: an_id,
-            cidrs: vec![]
+            cidrs: vec![],
+            cfg: IpamConfig::default(),
         }
     }
 
@@ -123,6 +125,28 @@ impl IpamV4 {
 
     fn size(&self) -> usize {
         self.cidrs.len()
+    }
+
+    fn contains(&self, search: Ipv4Network) -> bool {
+        for i in self.cidrs.iter() {
+           if i.cidr == search {
+               return true;
+           }
+        }
+        false
+    }
+
+    fn missing_supernets(&self) -> Vec<Ipv4Network> {
+        let mut results = vec![];
+        for e in self.cidrs.iter() {
+            let p = Ipv4Network::new(e.cidr.nth(0).unwrap(), e.cidr.prefix()).unwrap();
+            
+            if !self.contains(p) {
+                results.push(p);
+            }
+        }
+        results
+
     }
 }
 
@@ -181,6 +205,19 @@ mod tests {
         let _x = CidrV4Entry::new(s!("99.2.2.0/33"));
     }
 
+    #[test]
+    fn test_missing_supernets() {
+        let mut ipam = IpamV4::new(s!("My IPAM"));
+        let cidr_entry = CidrV4Entry::new(s!("192.168.5.3/24"));
+        ipam.add_entry(cidr_entry);
+        let expected_result = vec![ ipnetwork::Ipv4Network::new(Ipv4Addr::from([192, 168, 5, 0]), 24).unwrap() ];
+        assert_eq!(ipam.missing_supernets(), expected_result )
+
+    }
+
+
+    use std::fs::File;
+    use std::io::prelude::*;
 
     #[test]
     fn test_ip_addresses() { 
@@ -194,8 +231,14 @@ mod tests {
         }
         assert_eq!(ipam.cidrs.len(), 100);
 
-        let json = serde_json::to_string(&ipam).expect("Should have worked");
-        println!("{}",json)
+        let json = serde_json::to_string_pretty(&ipam).expect("Should have worked");
+        let mut f = File::create("assets/sample_ipam.json").expect("can't write the new file");
+        f.write_all(json.as_bytes()).expect("Was meant to error");
+
+        let missing = serde_json::to_string_pretty(&ipam.missing_supernets()).expect("Failure bro!");
+        let mut f = File::create("assets/missing_supernets.json").expect("can't write the new file");
+        f.write_all(missing.as_bytes()).expect("Was meant to error")
+
 
     }
 }
