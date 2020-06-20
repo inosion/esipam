@@ -1,42 +1,17 @@
 use cqrs_es::Aggregate;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashSet, HashMap};
+use crate::ipam_model::{ IpamV4, IpamV6 };
 
-#[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize)]
-pub struct Label {
-    key: String,
-    value: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct IPAM {
-    pub cidrs: Vec<CIDR>,
-}
-
-pub enum AttributeEntry {
-    Attr(Label),
-    SetOfAttr(HashSet<AttributeEntry>),
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct CIDR {
-    pub cidr: String,
-    pub id: String,
-    pub sysref: Option<String>,
-    pub attributes: HashSet<AttributeEntry>,
-}
-
-impl Aggregate for IPAM {
+impl Aggregate for IpamV4 {
     fn aggregate_type() -> &'static str {
-        "IPAM"
-    }
+        "IPAMV4"
+   }
 }
 
-impl Default for IPAM {
-    fn default() -> Self {
-        IPAM {
-            cidrs: vec![]
-        }
+impl Aggregate for IpamV6 {
+    fn aggregate_type() -> &'static str {
+        "IPAMV6"
     }
 }
 
@@ -44,7 +19,7 @@ impl Default for IPAM {
 mod aggregate_tests {
     use cqrs_es::test::TestFramework;
 
-    use crate::aggregate::IPAM;
+    use crate::aggregate::IpamV4;
     use crate::commands::{AddIPAMEntry, ReleaseIPAMEntry, AddAttributeToCidr, RemoveAttributeFromCidr};
     use crate::events::{IPAMEvent, IPAMEntryAdded, IPAMEntryReleased, AttributesAddedToCidr, AttributesRemovedDromCIDR};
 

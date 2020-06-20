@@ -17,7 +17,7 @@ Simple Attribute Labelling method
 
 # Vision / Epics
 
-- [ ] Create the REST API and Datamodel
+- [ ] Create the REST API and ~~Datamodel~~
 - [ ] Create a Simple single site Aggregate Root for the ES-CQRS
 - [ ] Create a CLI
 - [ ] Create a UI to interact with

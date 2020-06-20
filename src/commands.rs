@@ -1,17 +1,24 @@
 use cqrs_es::{AggregateError, Command};
 use serde::{Deserialize, Serialize};
 
+use std::collections::HashSet;
 use crate::aggregate::Ipam;
+use crate::ipam_model::{IpamV4, IPProtocolFamily, Label};
 use crate::events::{ESIPAMOpened, IpamEvent, IpamEntryAdded, IpamEntryReleased, AttributesAddedToCidr};
 
 #[derive(Serialize, Deserialize)]
-pub struct NewIPAM {
-    pub routing_domain_id: String
+pub struct CreateANewIPAM {
+    pub id: String,
+    pub protocol: IPProtocolFamily
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct AddIpamEntry {
-    pub cidr: String
+pub struct AddCidrEntry {
+    pub cidr: String,
+    pub id: Option<String>,
+    pub sysref: Option<String>,
+    pub parent: Option<String>,
+    pub attributes: HashSet<Label>    
 }
 
 #[derive(Serialize, Deserialize)]
@@ -22,8 +29,28 @@ pub struct ReleaseIpamEntry {
 #[derive(Serialize, Deserialize)]
 pub struct AddAttributeToCidr {
     pub cidr: String,
-    pub attribute: f64,
+    pub attribute: Label,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct AddAttributeToCidrById {
+    pub id: String,
+    pub attribute: Label,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RemoveAttributeByKeyFromCidr {
+    pub cidr: String,
+    pub key: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RemoveAttributeByKeyFromCidrById {
+    pub id: String,
+    pub attribute: Label,
+}
+
+// TODO from here down
 
 impl Command<Ipam, IpamEvent> for OpenESIPAM {
     fn handle(self, _account: &Ipam) -> Result<Vec<IpamEvent>, AggregateError> {

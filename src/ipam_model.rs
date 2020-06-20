@@ -5,12 +5,63 @@ use std::net::{Ipv4Addr, Ipv6Addr, IpAddr};
 use uuid::Uuid;
 use std::mem;
 
-use ipnetwork::Ipv4Network;
+use ipnetwork::{IpNetwork, Ipv4Network, Ipv6Network};
 
 #[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Label {
     key: String,
     value: String,
+}
+
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct CidrV4Entry {
+    pub cidr: Ipv4Network,
+    pub id: String,
+    pub uuid: Uuid,
+    pub sysref: Option<String>,
+    pub parent: Option<String>,
+    pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
+}
+
+impl Default for CidrV4Entry {
+    fn default() -> Self { 
+        CidrV4Entry { 
+            cidr: "0.0.0.0/0".parse().unwrap(),
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct CidrV6Entry {
+    pub cidr: Ipv4Network,
+    pub id: String,
+    pub uuid: Uuid,
+    pub sysref: Option<String>,
+    pub parent: Option<String>,
+    pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
+}
+
+impl Default for CidrV6Entry {
+    fn default() -> Self { 
+        CidrV6Entry { 
+            cidr: "::0".parse().unwrap(),
+            ..Default::default()
+        }
+    }
+}
+
+trait CidrEntry<T> {
+    cidr: T
+}
+impl CidrEntry for CidrV4Entry {}
+impl CidrEntry for CidrV6Entry {}
+
+#[derive(Serialize, Deserialize)]
+pub enum CidrData {
+    V4(CidrV4Entry),
+    V6(CidrV6Entry),
 }
 
 
@@ -34,23 +85,6 @@ impl Default for IpamConfig {
 //     SetOfAttr(HashSet<AttributeEntry>),
 // }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct CidrV4Entry {
-    pub cidr: Ipv4Network,
-    pub id: String,
-    pub uuid: Uuid,
-    pub sysref: Option<String>,
-    pub parent: Option<String>,
-    pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
-}
-impl Default for CidrV4Entry {
-    fn default() -> Self { 
-        CidrV4Entry { 
-            cidr: "0.0.0.0/0".parse().unwrap(),
-            ..Default::default()
-        }
-    }
-}
 
 impl CidrV4Entry { 
     fn new(cidr: String) -> Self {
@@ -87,23 +121,10 @@ impl CidrV4Entry {
 /// - a given IP Protocol V4. 
 /// 
 /// An IPAM is made up of a set of CidrEntries<Ipv4> entries.
-#[derive(Serialize, Deserialize, Default)]
-pub struct IpamV4 {
-    pub id: String,
-    pub cidrs: Vec<CidrV4Entry>,
-    pub cfg: IpamConfig,
-}
+/// 
+trait Ipam<T: CidrEntry> {
 
-impl IpamV4 {
-    fn new(an_id: String) -> Self {
-        IpamV4 { 
-            id: an_id,
-            cidrs: vec![],
-            cfg: IpamConfig::default(),
-        }
-    }
-
-    fn add_entry(&mut self, entry: CidrV4Entry) {
+    fn add_entry(&mut self, entry: T) {
         let mut c = entry.clone();
         let cidrs = self.cidrs.clone();
         for (i, e) in cidrs.iter().enumerate() {
@@ -119,7 +140,7 @@ impl IpamV4 {
         self.cidrs.push(c);
     }
 
-    fn replace(&mut self, idx: usize, new_entry: CidrV4Entry) -> CidrV4Entry {
+    fn replace(&mut self, idx: usize, new_entry: T) -> T {
         mem::replace(&mut self.cidrs[idx], new_entry)
     }
 
@@ -148,6 +169,34 @@ impl IpamV4 {
         results
 
     }
+}
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct IpamV4 {
+    pub id: String,
+    pub protocol: IPProtocolFamily,
+    pub cidrs: Vec<CidrV4Entry>,
+    pub cfg: IpamConfig,
+}
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct IpamV6 {
+    pub id: String,
+    pub protocol: IPProtocolFamily,
+    pub cidrs: Vec<CidrV6Entry>,
+    pub cfg: IpamConfig,
+}
+
+impl IpamV4 {
+    fn new(an_id: String) -> Self {
+        IpamV4 { 
+            id: an_id,
+            cidrs: vec![],
+            protocol: IPProtocolFamily::V4,
+            cfg: IpamConfig::default(),
+        }
+    }
+
 }
 
 // impl Aggregate for IpamV4 {
@@ -214,7 +263,6 @@ mod tests {
         assert_eq!(ipam.missing_supernets(), expected_result )
 
     }
-
 
     use std::fs::File;
     use std::io::prelude::*;
