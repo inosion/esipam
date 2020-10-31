@@ -7,16 +7,22 @@ use std::mem;
 
 use ipnetwork::{IpNetwork, Ipv4Network, Ipv6Network};
 
+use crate::IpamError;
+
 #[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Label {
     key: String,
     value: String,
 }
 
+pub enum IPProtocolFamily {
+    V4,
+    V6
+}
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct CidrV4Entry {
-    pub cidr: Ipv4Network,
+pub struct CidrEntry {
+    pub cidr: IpNetwork,
     pub id: String,
     pub uuid: Uuid,
     pub sysref: Option<String>,
@@ -24,56 +30,27 @@ pub struct CidrV4Entry {
     pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
 }
 
-impl Default for CidrV4Entry {
+impl Default for CidrEntry {
     fn default() -> Self { 
-        CidrV4Entry { 
+        CidrEntry { 
             cidr: "0.0.0.0/0".parse().unwrap(),
             ..Default::default()
         }
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct CidrV6Entry {
-    pub cidr: Ipv4Network,
-    pub id: String,
-    pub uuid: Uuid,
-    pub sysref: Option<String>,
-    pub parent: Option<String>,
-    pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
-}
-
-impl Default for CidrV6Entry {
-    fn default() -> Self { 
-        CidrV6Entry { 
-            cidr: "::0".parse().unwrap(),
-            ..Default::default()
-        }
-    }
-}
-
-trait CidrEntry<T> {
-    cidr: T
-}
-impl CidrEntry for CidrV4Entry {}
-impl CidrEntry for CidrV6Entry {}
-
-#[derive(Serialize, Deserialize)]
-pub enum CidrData {
-    V4(CidrV4Entry),
-    V6(CidrV6Entry),
-}
-
-
+/// Configuration settings of a given IPAM
 #[derive(Serialize, Deserialize)]
 pub struct IpamConfig { 
-    pub add_supernets: bool
+    /// When a host CIDR is added, 10.99.99.68/24, setting this field to true 
+    /// will also add 10.99.99.0/24 if it is missing
+    pub add_missing_supernet: bool
 }
 
 impl Default for IpamConfig { 
     fn default() -> Self { 
         IpamConfig { 
-            add_supernets: false
+            add_missing_supernet: false
         }
     }
 }
@@ -86,33 +63,45 @@ impl Default for IpamConfig {
 // }
 
 
-impl CidrV4Entry { 
-    fn new(cidr: String) -> Self {
-        let thecidr: Ipv4Network = cidr.parse().unwrap();
-        CidrV4Entry::new_from_ipnet(thecidr)
-    }
+impl From<IpNetwork> for CidrEntry
 
-
-    fn new_from_stdipv4(i: Ipv4Addr) -> Self {
-        CidrV4Entry::new_from_ipnet(Ipv4Network::from(i))
-    }
-
-    fn new_from_ipnet(i: Ipv4Network) -> Self {
+    fn from_ipnetwork(cidr: IpNetwork) -> CidrEntry {
         let theuuid = Uuid::new_v4();
 
-        CidrV4Entry {
-          cidr: i,
-          id: format!("{}_{}", theuuid, i),
-          uuid: theuuid,
-          sysref: None,
-          parent: None,
-          attributes: HashSet::default(),
+        CidrEntry {
+            cidr,
+            id: format!("{}_{}", theuuid, cidr),
+            uuid: theuuid,
+            sysref: None,
+            parent: None,
+            attributes: HashSet::default(),
         }
     }
-
 }
 
-/// The IpamV4 is the main object that stores CIDR entries that:
+impl TryFrom<&str> for CidrEntry {
+    type Err = IpamError;
+    fn try_from(s: &str) -> Result<Self, Self::Err> {
+        let cidr: IpNetwork = s.parse()?;
+        match cidr { 
+            IpNetwork::V4(v4) =>  Ok(CidrEntry::from_ipnetwork(cidr)),
+            IpNetwork::V6(v6) =>  Ok(CidrEntry::from_ipnetwork(cidr)),
+        }
+    
+    }
+}
+
+impl From<IpAddr> for CidrEntry {
+    fn from(addr: IpAddr) -> CidrEntry {
+        match addr {
+            IpAddr::V4(a) => CidrEntry::from(IpNetwork::V4(Ipv4Network::from(a))),
+            IpAddr::V4(a) => CidrEntry::from(IpNetwork::V6(Ipv4Network::from(a))),
+        }
+    }        
+}
+
+/// The Ipam is the main object that stores a CIDR entry and attreibutes associted to it,
+///  that:
 /// - are for one or more Routing Domain/ASNs (where IP conflicts are intended to not occur)
 /// 
 ///   The entries inside am IPAM can be from one or more `Routing Domain`'s - [RFC-4632](https://tools.ietf.org/html/rfc4632#section-5.4) or Autonomous Systems;
@@ -122,22 +111,42 @@ impl CidrV4Entry {
 /// 
 /// An IPAM is made up of a set of CidrEntries<Ipv4> entries.
 /// 
-trait Ipam<T: CidrEntry> {
 
-    fn add_entry(&mut self, entry: T) {
-        let mut c = entry.clone();
-        let cidrs = self.cidrs.clone();
-        for (i, e) in cidrs.iter().enumerate() {
-            if e.cidr.is_supernet_of(entry.cidr) {
-                c.parent = Some(e.id.clone());
-            }
-            if e.cidr.is_subnet_of(entry.cidr) {
-                let mut x = e.clone();
-                x.parent = Some(c.id.clone());
-                self.replace(i, x);
+#[derive(Serialize, Deserialize, Default)]
+pub struct Ipam {
+    pub id: String,
+    pub protocol: IPProtocolFamily,
+    pub cidrs: Vec<CidrEntry>,
+    pub cfg: IpamConfig,
+}
+
+impl Ipam {
+
+    fn add_entry(&mut self, entry: CidrEntry) -> Result<IpamError> {
+
+        // ensure the entry being added is matching the configured Ipam Protocol
+        match (self.protocol, entry.cidr) {
+            (IPProtocolFamily::V4, IpNetwork::V6(_) => Err(IpamError::InvalidProtocol())
+            (IPProtocolFamily::V6, IpNetwork::V4(_) => Err(IpamError::InvalidProtocol())
+            _ => {
+
+                let mut c = entry.clone();
+                let cidrs = self.cidrs.clone();
+                for (i, e) in cidrs.iter().enumerate() {
+                    if e.cidr.is_supernet_of(entry.cidr) {
+                        c.parent = Some(e.id.clone());
+                    }
+                    if e.cidr.is_subnet_of(entry.cidr) {
+                        let mut x = e.clone();
+                        x.parent = Some(c.id.clone());
+                        self.replace(i, x);
+                    }
+                }
+                self.cidrs.push(c);
+                Ok(entry.id)
+
             }
         }
-        self.cidrs.push(c);
     }
 
     fn replace(&mut self, idx: usize, new_entry: T) -> T {
@@ -157,10 +166,13 @@ trait Ipam<T: CidrEntry> {
         false
     }
 
-    fn missing_supernets(&self) -> Vec<Ipv4Network> {
+    fn missing_supernets(&self) -> Vec<IpNetwork> {
         let mut results = vec![];
         for e in self.cidrs.iter() {
-            let p = Ipv4Network::new(e.cidr.nth(0).unwrap(), e.cidr.prefix()).unwrap();
+            let p = match self.protocol {
+                IPProtocolFamily::V4 => Ipv4Network::new(e.cidr.nth(0).unwrap(), e.cidr.prefix()).unwrap();
+                IPProtocolFamily::V6 => Ipv6Network::new(e.cidr.nth(0).unwrap(), e.cidr.prefix()).unwrap();
+            }
             
             if !self.contains(p) {
                 results.push(p);
@@ -171,32 +183,16 @@ trait Ipam<T: CidrEntry> {
     }
 }
 
-#[derive(Serialize, Deserialize, Default)]
-pub struct IpamV4 {
-    pub id: String,
-    pub protocol: IPProtocolFamily,
-    pub cidrs: Vec<CidrV4Entry>,
-    pub cfg: IpamConfig,
-}
 
-#[derive(Serialize, Deserialize, Default)]
-pub struct IpamV6 {
-    pub id: String,
-    pub protocol: IPProtocolFamily,
-    pub cidrs: Vec<CidrV6Entry>,
-    pub cfg: IpamConfig,
-}
-
-impl IpamV4 {
-    fn new(an_id: String) -> Self {
+impl Ipam {
+    fn new(id: String, protocol: IPProtocolFamily) -> Self {
         IpamV4 { 
-            id: an_id,
+            id,
             cidrs: vec![],
-            protocol: IPProtocolFamily::V4,
+            protocol,
             cfg: IpamConfig::default(),
         }
     }
-
 }
 
 // impl Aggregate for IpamV4 {
