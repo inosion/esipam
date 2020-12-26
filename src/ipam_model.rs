@@ -1,13 +1,14 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{HashSet};
 
+use std::convert::TryFrom;
 use std::net::{Ipv4Addr, Ipv6Addr, IpAddr};
 use uuid::Uuid;
 use std::mem;
 
 use ipnetwork::{IpNetwork, Ipv4Network, Ipv6Network};
 
-use crate::IpamError;
+use crate::common::IpamError;
 
 #[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Label {
@@ -15,10 +16,17 @@ pub struct Label {
     value: String,
 }
 
+#[derive(Serialize, Deserialize, Clone, Copy)]
 pub enum IPProtocolFamily {
     V4,
     V6
 }
+
+impl Default for IPProtocolFamily { 
+    fn default() -> Self { Self::V6 }
+}
+
+
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct CidrEntry {
@@ -33,7 +41,7 @@ pub struct CidrEntry {
 impl Default for CidrEntry {
     fn default() -> Self { 
         CidrEntry { 
-            cidr: "0.0.0.0/0".parse().unwrap(),
+            cidr: "::0/0".parse().unwrap(),
             ..Default::default()
         }
     }
@@ -63,9 +71,9 @@ impl Default for IpamConfig {
 // }
 
 
-impl From<IpNetwork> for CidrEntry
+impl From<IpNetwork> for CidrEntry {
 
-    fn from_ipnetwork(cidr: IpNetwork) -> CidrEntry {
+    fn from(cidr: IpNetwork) -> CidrEntry {
         let theuuid = Uuid::new_v4();
 
         CidrEntry {
@@ -80,12 +88,13 @@ impl From<IpNetwork> for CidrEntry
 }
 
 impl TryFrom<&str> for CidrEntry {
-    type Err = IpamError;
-    fn try_from(s: &str) -> Result<Self, Self::Err> {
+    type Error = IpamError;
+
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
         let cidr: IpNetwork = s.parse()?;
         match cidr { 
-            IpNetwork::V4(v4) =>  Ok(CidrEntry::from_ipnetwork(cidr)),
-            IpNetwork::V6(v6) =>  Ok(CidrEntry::from_ipnetwork(cidr)),
+            IpNetwork::V4(v4) =>  Ok(CidrEntry::from(cidr)),
+            IpNetwork::V6(v6) =>  Ok(CidrEntry::from(cidr)),
         }
     
     }
@@ -95,7 +104,7 @@ impl From<IpAddr> for CidrEntry {
     fn from(addr: IpAddr) -> CidrEntry {
         match addr {
             IpAddr::V4(a) => CidrEntry::from(IpNetwork::V4(Ipv4Network::from(a))),
-            IpAddr::V4(a) => CidrEntry::from(IpNetwork::V6(Ipv4Network::from(a))),
+            IpAddr::V6(a) => CidrEntry::from(IpNetwork::V6(Ipv6Network::from(a))),
         }
     }        
 }
@@ -122,34 +131,66 @@ pub struct Ipam {
 
 impl Ipam {
 
-    fn add_entry(&mut self, entry: CidrEntry) -> Result<IpamError> {
+    fn add_entry(&mut self, entry: CidrEntry) -> Result<CidrEntry, IpamError> {
 
         // ensure the entry being added is matching the configured Ipam Protocol
         match (self.protocol, entry.cidr) {
-            (IPProtocolFamily::V4, IpNetwork::V6(_) => Err(IpamError::InvalidProtocol())
-            (IPProtocolFamily::V6, IpNetwork::V4(_) => Err(IpamError::InvalidProtocol())
-            _ => {
+            (IPProtocolFamily::V4, IpNetwork::V6(_)) => Err(IpamError::InvalidProtocol),
+            (IPProtocolFamily::V6, IpNetwork::V4(_)) => Err(IpamError::InvalidProtocol),
+            (IPProtocolFamily::V4, IpNetwork::V4(v4)) => {
 
-                let mut c = entry.clone();
+                let mut c = entry;
                 let cidrs = self.cidrs.clone();
+
                 for (i, e) in cidrs.iter().enumerate() {
-                    if e.cidr.is_supernet_of(entry.cidr) {
+
+                    let candidate = match e.cidr {
+                        IpNetwork::V4(x) => Ok(x),
+                        _ => Err(IpamError::InvalidProtocol)
+                    }.expect("Dead code, can't get here");
+                
+                    if v4.is_subnet_of(candidate) {
                         c.parent = Some(e.id.clone());
                     }
-                    if e.cidr.is_subnet_of(entry.cidr) {
+                    if v4.is_supernet_of(candidate) {
                         let mut x = e.clone();
                         x.parent = Some(c.id.clone());
                         self.replace(i, x);
                     }
                 }
-                self.cidrs.push(c);
-                Ok(entry.id)
+                self.cidrs.push(c.to_owned());
+                Ok(c)
+            },
 
-            }
+            (IPProtocolFamily::V6, IpNetwork::V6(v6)) => {
+
+                let mut c = entry;
+                let cidrs = self.cidrs.clone();
+
+                for (i, e) in cidrs.iter().enumerate() {
+
+                    let candidate = match e.cidr {
+                        IpNetwork::V6(x) => Ok(x),
+                        _ => Err(IpamError::InvalidProtocol)
+                    }.expect("Dead code, can't get here");
+                
+                    if v6.is_subnet_of(candidate) {
+                        c.parent = Some(e.id.clone());
+                    }
+                    if v6.is_supernet_of(candidate) {
+                        let mut x = e.clone();
+                        x.parent = Some(c.id.clone());
+                        self.replace(i, x);
+                    }
+                }
+                self.cidrs.push(c.to_owned());
+                Ok(c)
+            },
+
         }
     }
 
-    fn replace(&mut self, idx: usize, new_entry: T) -> T {
+    fn replace(&mut self, idx: usize, new_entry: CidrEntry) -> CidrEntry {
         mem::replace(&mut self.cidrs[idx], new_entry)
     }
 
@@ -157,7 +198,7 @@ impl Ipam {
         self.cidrs.len()
     }
 
-    fn contains(&self, search: Ipv4Network) -> bool {
+    fn contains(&self, search: IpNetwork) -> bool {
         for i in self.cidrs.iter() {
            if i.cidr == search {
                return true;
@@ -169,11 +210,7 @@ impl Ipam {
     fn missing_supernets(&self) -> Vec<IpNetwork> {
         let mut results = vec![];
         for e in self.cidrs.iter() {
-            let p = match self.protocol {
-                IPProtocolFamily::V4 => Ipv4Network::new(e.cidr.nth(0).unwrap(), e.cidr.prefix()).unwrap();
-                IPProtocolFamily::V6 => Ipv6Network::new(e.cidr.nth(0).unwrap(), e.cidr.prefix()).unwrap();
-            }
-            
+            let p = IpNetwork::new(e.cidr.network(), e.cidr.prefix()).unwrap();
             if !self.contains(p) {
                 results.push(p);
             }
@@ -186,7 +223,7 @@ impl Ipam {
 
 impl Ipam {
     fn new(id: String, protocol: IPProtocolFamily) -> Self {
-        IpamV4 { 
+        Ipam { 
             id,
             cidrs: vec![],
             protocol,
@@ -195,9 +232,9 @@ impl Ipam {
     }
 }
 
-// impl Aggregate for IpamV4 {
+// impl Aggregate for Ipam {
 //     fn aggregate_type() -> &'static str {
-//         "IpamV4"
+//         "Ipam"
 //     }
 // }
 
@@ -207,13 +244,9 @@ impl Ipam {
  */
 #[cfg(test)]
 mod tests { 
-    macro_rules! s {
-        ($s:expr) => {
-            String::from($s)
-        };
-    }
 
     use super::*;
+    use crate::common;
     use rand::Rng;
 
     fn get_net4_address() -> ipnetwork::Ipv4Network {
@@ -229,34 +262,44 @@ mod tests {
 
     #[test]
     fn test_basic_cidr_entry() {
-        let x = CidrV4Entry::new(s!("10.2.2.1/21"));
+        let x = CidrEntry::try_from("10.2.2.1/21").expect("failure abound");
+
         assert_eq!(x.id,format!("{}_{}",x.uuid,"10.2.2.1/21"));
+        assert_eq!(x.cidr.is_ipv4(),true);
     }
+
     #[test]
     #[should_panic]
     fn test_fail_for_invalid_cidr_entry() {
-        let _x = CidrV4Entry::new(s!("INVALID_CidrV4Entry_10.2.2.sz1/21"));
+        let x = CidrEntry::try_from("1NVALID_CidrEntry_10.2.2.1/21").expect("failure abound");
     }
 
     #[test]
     #[should_panic]
-    fn test_fail_for_invalid_cidr_entry2() {
-        let _x = CidrV4Entry::new(s!("299.2.2.0/21"));
+    fn test_fail_for_invalid_cidr_v4_entry() {
+        // IP 910. is invalid
+        let x = CidrEntry::try_from("910.2.2.1/21").expect("failure abound");
+    }
+
+    #[test]
+    fn test_valid_cidr_v6_entry() {
+        let x = CidrEntry::try_from("fe80::cafe:babe/64").expect("failure abound");
+        assert_eq!(x.cidr.is_ipv6(),true);
     }
 
     #[test]
     #[should_panic]
-    fn test_fail_for_invalid_cidr_entry3() {
-        let _x = CidrV4Entry::new(s!("99.2.2.0/33"));
+    fn test_fail_for_invalid_cidr_mask() {
+        let _ = CidrEntry::try_from("99.2.2.0/33").expect("failure abound");
     }
 
     #[test]
     fn test_missing_supernets() {
-        let mut ipam = IpamV4::new(s!("My IPAM"));
-        let cidr_entry = CidrV4Entry::new(s!("192.168.5.3/24"));
-        ipam.add_entry(cidr_entry);
-        let expected_result = vec![ ipnetwork::Ipv4Network::new(Ipv4Addr::from([192, 168, 5, 0]), 24).unwrap() ];
-        assert_eq!(ipam.missing_supernets(), expected_result )
+        let mut ipam = Ipam::new(s!("My IPAM"), IPProtocolFamily::V4);
+        let cidr_entry = CidrEntry::try_from("192.168.5.3/24").expect("failure");
+        let _ = ipam.add_entry(cidr_entry);
+        let expected_result = vec![ IpNetwork::try_from("192.168.5.0/24").unwrap() ];
+        assert_eq!(ipam.missing_supernets()[0], expected_result[0] )
 
     }
 
@@ -266,12 +309,12 @@ mod tests {
     #[test]
     fn test_ip_addresses() { 
 
-        let mut ipam = IpamV4::new(s!("My IPAM"));
+        let mut ipam = Ipam::new(s!("My IPAM"), IPProtocolFamily::V4);
 
         for _i in 0 .. 100 {
             let net4 = get_net4_address();
-            let cidr_entry = CidrV4Entry::new_from_ipnet(net4);
-            ipam.add_entry(cidr_entry);
+            let cidr_entry = CidrEntry::from(IpNetwork::from(net4));
+            let _ ipam.add_entry(cidr_entry);
         }
         assert_eq!(ipam.cidrs.len(), 100);
 
