@@ -2,8 +2,13 @@ use cqrs_es::{AggregateError, Command};
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashSet;
-use crate::ipam_model::{Ipam, IPProtocolFamily, Label, IpamConfig};
-use crate::events::{IpamEvent, IpamCreated};
+use std::convert::TryFrom;
+use std::str::FromStr;
+use ipnetwork::IpNetwork;
+
+use crate::ipam_model::{Ipam, IPProtocolFamily, Label, IpamConfig, CidrEntry};
+use crate::events::{IpamEvent, IpamCreated, CidrEntryAdded};
+use crate::common::IpamError;
 
 // #[derive(Serialize, Deserialize)]
 // pub struct AddAttributeToCidrEntry {
@@ -52,7 +57,7 @@ pub struct CreateNewIpam {
 impl Command<Ipam, IpamEvent> for CreateNewIpam {
     fn handle(self, ipam: &Ipam) -> Result<Vec<IpamEvent>, AggregateError> {
 
-        println!("Handling new entry");
+        println!("- Create new IPAM");
         
         let event_payload = IpamCreated  {
             uuid: ipam.uuid,
@@ -77,14 +82,44 @@ impl Command<Ipam, IpamEvent> for CreateNewIpam {
 //     }
 // }
 
-// /* ---- Adding and Removing Cidr Entries ------------------------ */
-// #[derive(Serialize, Deserialize)]
-// pub struct AddCidrEntry {
-//     pub cidr: String,
-//     pub id: Option<String>,
-//     pub sysref: Option<String>,
-//     pub attributes: HashSet<Label>    
-// }
+/* ---- Adding and Removing Cidr Entries ------------------------ */
+#[derive(Serialize, Deserialize)]
+pub struct AddCidrEntry {
+    pub cidr: String,
+    pub id: Option<String>,
+    pub sysref: Option<String>,
+    pub attributes: HashSet<Label>    
+}
+
+impl Command<Ipam, IpamEvent> for AddCidrEntry {
+    fn handle(self, ipam: &Ipam) -> Result<Vec<IpamEvent>, AggregateError> {
+        
+        println!(":: Add Cidr Entry");
+
+        let cidr = IpNetwork::from_str(self.cidr.as_str());
+        if cidr.is_err() {
+            return Err(AggregateError::TechnicalError(String::from("format was wrong")))
+        } 
+
+        if ipam.contains(cidr.unwrap()) {
+            return Err(AggregateError::TechnicalError(String::from("cidr already exists")))
+        }
+
+        let mut cidr_entry = CidrEntry::try_from_with_extras(
+            self.cidr.as_str(),
+            self.id,
+            self.sysref,
+            self.attributes)?;
+
+        // find the parent of this entry, we just want the id
+        cidr_entry.parent = ipam.parent_of(cidr_entry.cidr).map(|r| r.id);
+
+        // Create the event
+        let event_payload = CidrEntryAdded { cidr_entry };
+        Ok(vec![IpamEvent::CidrEntryAdded(event_payload)])
+    }
+}
+
 
 // // #[derive(Serialize, Deserialize)]
 // // pub struct ReleaseCidrEntry {

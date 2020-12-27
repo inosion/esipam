@@ -13,9 +13,18 @@ Event Sourced, CQRS REST API to store your CIDR entries (IP Addresses and Subnet
 - Distributed, Eventually Consistent
 - `Partition Tolerant` & `Available`, in CAP / Brewer's theorem.
 
-Simple Attribute Labelling method
+Simple Attribute Labelling
+```
+      "attributes": [
+        {
+          "key": "mykey",
+          "value": "1234"
+        }
+      ]
+      
+```
 
-S## Ipam Data Structure
+## Ipam Data Structure
 
 The Ipam Data structure is simple enough.
 

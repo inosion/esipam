@@ -1,5 +1,8 @@
 # Development Notes
 
+## Logging
+
+look at `tracing` // and `logging` crates
 
 ## ES CQRS
 - write a leveldb impl

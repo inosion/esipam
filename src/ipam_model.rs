@@ -121,7 +121,7 @@ impl From<&str> for Ipam {
 pub struct CidrEntry {
     pub cidr: IpNetwork,
     pub id: String,
-    pub uuid: Uuid,
+    uuid: Uuid,
     pub sysref: Option<String>,
     pub parent: Option<String>,
     pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
@@ -134,6 +134,34 @@ impl Default for CidrEntry {
             ..Default::default()
         }
     }
+}
+
+impl CidrEntry { 
+ 
+    /// Create a Cidr Entry from str
+    /// Optional extras and sets of attributes can be provided
+    /// also
+    pub fn try_from_with_extras(
+        s: &str,  
+        id: Option<String>,
+        sysref: Option<String>,
+        attributes: HashSet<Label>    
+        ) -> Result<CidrEntry, IpamError> {
+
+        let cidr: IpNetwork = s.parse()?;
+        let mut cidr_entry = match cidr {
+            IpNetwork::V4(_v4) => CidrEntry::from(cidr),
+            IpNetwork::V6(_v6) => CidrEntry::from(cidr),
+        };
+
+        // id is set to a default value, change if supplied
+        id.into_iter().for_each(|i| cidr_entry.id = i);
+        cidr_entry.sysref = sysref;
+        cidr_entry.attributes = attributes;
+        Ok(cidr_entry)
+    }
+
+
 }
 
 // #[derive(Hash, Eq, PartialEq, Serialize, Deserialize, Debug)]
@@ -167,6 +195,7 @@ impl TryFrom<&str> for CidrEntry {
             IpNetwork::V6(_v6) => Ok(CidrEntry::from(cidr)),
         }
     }
+
 }
 
 impl From<IpAddr> for CidrEntry {
@@ -197,8 +226,54 @@ impl Default for IpamConfig {
 }
 
 
+pub struct CidrEntryResult{
+    pub cidr: IpNetwork,
+    pub id: String,
+}
+
 impl Ipam {
-    fn add_entry(&mut self, entry: CidrEntry) -> Result<CidrEntry, IpamError> {
+
+    pub (crate) fn children_of(&self, entry: IpNetwork) -> Vec<IpNetwork> {
+        vec![]
+    }
+
+
+    /// Returns the ID, and the CIDR of the located entry
+    /// need to optimise this (Tuple struct or something, to pin the type)
+    pub (crate) fn parent_of(&self, entry: IpNetwork) -> Option<CidrEntryResult> {
+        match entry { 
+            IpNetwork::V6(v6) => {
+                for (i, e) in self.cidrs.iter().enumerate() {
+                    let candidate = match e.cidr {
+                        IpNetwork::V6(x) => Ok(x),
+                        _ => Err(IpamError::InvalidProtocol),
+                    }
+                    .expect("Dead code, can't get here");
+
+                    if v6 != candidate && v6.is_subnet_of(candidate) {
+                        return Some(CidrEntryResult{ id: e.id.clone(), cidr: e.cidr})
+                    }
+                }
+            },
+            IpNetwork::V4(v4) => {
+                for (i, e) in self.cidrs.iter().enumerate() {
+                    let candidate = match e.cidr {
+                        IpNetwork::V4(x) => Ok(x),
+                        _ => Err(IpamError::InvalidProtocol),
+                    }
+                    .expect("Dead code, can't get here");
+
+                    if v4 != candidate && v4.is_subnet_of(candidate) {
+                        return Some(CidrEntryResult{ id: e.id.clone(), cidr: e.cidr })
+                    }
+                }
+            }
+
+        }
+        None
+    }
+
+    pub(crate) fn add_entry(&mut self, entry: CidrEntry) -> Result<CidrEntry, IpamError> {
         // ensure the entry being added is matching the configured Ipam Protocol
         match (self.protocol.clone(), entry.cidr) {
             (IPProtocolFamily::V4, IpNetwork::V6(_)) => Err(IpamError::InvalidProtocol),
@@ -253,15 +328,15 @@ impl Ipam {
         }
     }
 
-    fn replace(&mut self, idx: usize, new_entry: CidrEntry) -> CidrEntry {
+    pub(crate) fn replace(&mut self, idx: usize, new_entry: CidrEntry) -> CidrEntry {
         mem::replace(&mut self.cidrs[idx], new_entry)
     }
 
-    fn size(&self) -> usize {
+    pub(crate) fn size(&self) -> usize {
         self.cidrs.len()
     }
 
-    fn contains(&self, search: IpNetwork) -> bool {
+    pub(crate) fn contains(&self, search: IpNetwork) -> bool {
         for i in self.cidrs.iter() {
             if i.cidr == search {
                 return true;
@@ -270,7 +345,7 @@ impl Ipam {
         false
     }
 
-    fn missing_supernets(&self) -> Vec<IpNetwork> {
+    pub(crate) fn missing_supernets(&self) -> Vec<IpNetwork> {
         let mut results = vec![];
         for e in self.cidrs.iter() {
             let p = IpNetwork::new(e.cidr.network(), e.cidr.prefix()).unwrap();

@@ -1,0 +1,1 @@
+{"cidr": "10.44.0.0/16","id": "10_44_0_0_network_internal", "sysref":"assets::network::1771662786", "attributes":[ { "key" : "mykey", "value": "1234"} ]}
