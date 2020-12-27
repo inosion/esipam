@@ -15,9 +15,40 @@ Event Sourced, CQRS REST API to store your CIDR entries (IP Addresses and Subnet
 
 Simple Attribute Labelling method
 
+S## Ipam Data Structure
+
+The Ipam Data structure is simple enough.
+
+```plantuml
+
+class Ipam {
+  id
+  name
+  protocol # v4 or v6
+  cidrs: Vec<CidrEntry>
+}
+class CidrEntry { 
+  id
+  uuid
+  cidr # v4 or v6
+  sysref
+  parent
+  attributes: Set<Label>
+}
+
+class Label {
+  Key=Value
+}
+
+Ipam "1" *-- "many" CidrEntry : contains Vector of
+CidrEntry "1" *-- "many" Label : contains Set of
+CidrEntry --> CidrEntry : on parent (id of)
+
+```
+
 # Vision / Epics
 
-- [ ] Create the REST API and ~~Datamodel~~
+- [X] Create the REST API and Datamodel
 - [ ] Create a Simple single site Aggregate Root for the ES-CQRS
 - [ ] Create a CLI
 - [ ] Create a UI to interact with

@@ -1,5 +1,11 @@
 # Development Notes
 
+
+## ES CQRS
+- write a leveldb impl
+- write a journaldb impl
+- write an etcd impl
+
 ## CIDR Structs to use
 
 Looking for a library that is on par with Python's `ipaddress`. 

@@ -8,14 +8,14 @@ macro_rules! s {
     };
 }
 
-/// IpamError for the IPAM Service
+/// IpamGroupError for the Ipam Service
 #[derive(Error, Debug)]
 pub enum IpamError {
 
     #[error(transparent)]
     InvalidEntry( #[from] ipnetwork::IpNetworkError ),
 
-    #[error("Entry is either V6 or V4 and should be v.v.")]    
+    #[error("CidrEntry is the wrong Protocol. either V6 or V4 ")]    
     InvalidProtocol,
 
 }
