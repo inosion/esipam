@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::convert::TryFrom;
 use std::mem;
-use std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
+use std::net::{ IpAddr , Ipv4Addr, Ipv6Addr };
 use uuid::Uuid;
-use crate::common::IpamError;
+use crate::error::IpamError;
 
 /* --- Common and Simple Types -----------------------------------------*/
 
@@ -27,6 +27,9 @@ impl Default for IPProtocolFamily {
         Self::V6
     }
 }
+
+type CidrId = Box<String>;
+
 
 /* --- Ipam -----------------------------------------*/
 /// An Ipam is the Single Aggregate that  holds
@@ -85,6 +88,43 @@ impl Default for Ipam {
     }
 }
 
+trait Finder<T> {
+    fn find(&self, search: T) -> Option<CidrEntry>;
+}
+
+impl Finder<&CidrId> for Ipam {
+    fn find(&self, search: &CidrId) -> Option<CidrEntry> {
+        self.cidrs.iter().find(|&ce| ce.id == *search).map(|r| r.clone())
+    }
+}
+
+impl Finder<&IpNetwork> for Ipam {
+    fn find(&self, search: &IpNetwork) -> Option<CidrEntry> {
+        self.cidrs.iter().find(|&ce| ce.cidr == *search).map(|r| r.clone())
+    }
+}
+
+impl Finder<&Uuid> for Ipam {
+    fn find(&self, search: &Uuid) -> Option<CidrEntry> {
+        self.cidrs.iter().find(|&ce| ce.uuid == *search).map(|r| r.clone())
+    }
+}
+
+impl Finder<&str> for Ipam {
+    fn find(&self, search: &str) -> Option<CidrEntry> {
+        self.cidrs.iter().find(|&ce| 
+               match search {
+                   search if ce.cidr.to_string().contains(search) => true,
+                   search if ce.id.to_string().contains(search) => true,
+                   search if ce.uuid.to_string().contains(search) => true,
+                   search if ce.sysref.as_ref().unwrap().contains(search) => true,
+                   _ => false
+
+               })
+            .map(|r| r.clone())
+    }
+}
+
 impl Ipam {
     fn new(id: &str) -> Self {
         Ipam {
@@ -100,143 +140,23 @@ impl Ipam {
             ..Default::default()
         }
     }
-    
-}
-
-impl Aggregate for Ipam {
-    fn aggregate_type() -> &'static str {
-        "Ipam"
-    }
-}
-
-impl From<&str> for Ipam {
-    fn from(s: &str) -> Ipam {
-        Ipam::new(s)
-    }
-}
-
-/* --- CidrEntry -----------------------------------------*/
-
-#[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
-pub struct CidrEntry {
-    pub cidr: IpNetwork,
-    pub id: String,
-    uuid: Uuid,
-    pub sysref: Option<String>,
-    pub parent: Option<String>,
-    pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
-}
-
-impl Default for CidrEntry {
-    fn default() -> Self {
-        CidrEntry {
-            cidr: "::0/0".parse().unwrap(),
-            ..Default::default()
-        }
-    }
-}
-
-impl CidrEntry { 
- 
-    /// Create a Cidr Entry from str
-    /// Optional extras and sets of attributes can be provided
-    /// also
-    pub fn try_from_with_extras(
-        s: &str,  
-        id: Option<String>,
-        sysref: Option<String>,
-        attributes: HashSet<Label>    
-        ) -> Result<CidrEntry, IpamError> {
-
-        let cidr: IpNetwork = s.parse()?;
-        let mut cidr_entry = match cidr {
-            IpNetwork::V4(_v4) => CidrEntry::from(cidr),
-            IpNetwork::V6(_v6) => CidrEntry::from(cidr),
-        };
-
-        // id is set to a default value, change if supplied
-        id.into_iter().for_each(|i| cidr_entry.id = i);
-        cidr_entry.sysref = sysref;
-        cidr_entry.attributes = attributes;
-        Ok(cidr_entry)
-    }
-
-
-}
-
-// #[derive(Hash, Eq, PartialEq, Serialize, Deserialize, Debug)]
-// pub enum AttributeEntry {
-//     Attr(Label),
-//     SetOfAttr(HashSet<AttributeEntry>),
-// }
-
-impl From<IpNetwork> for CidrEntry {
-    fn from(cidr: IpNetwork) -> CidrEntry {
-        let theuuid = Uuid::new_v4();
-
-        CidrEntry {
-            cidr,
-            id: format!("{}_{}", theuuid, cidr),
-            uuid: theuuid,
-            sysref: None,
-            parent: None,
-            attributes: HashSet::default(),
-        }
-    }
-}
-
-impl TryFrom<&str> for CidrEntry {
-    type Error = IpamError;
-
-    fn try_from(s: &str) -> Result<Self, Self::Error> {
-        let cidr: IpNetwork = s.parse()?;
-        match cidr {
-            IpNetwork::V4(_v4) => Ok(CidrEntry::from(cidr)),
-            IpNetwork::V6(_v6) => Ok(CidrEntry::from(cidr)),
-        }
-    }
-
-}
-
-impl From<IpAddr> for CidrEntry {
-    fn from(addr: IpAddr) -> CidrEntry {
-        match addr {
-            IpAddr::V4(a) => CidrEntry::from(IpNetwork::V4(Ipv4Network::from(a))),
-            IpAddr::V6(a) => CidrEntry::from(IpNetwork::V6(Ipv6Network::from(a))),
-        }
-    }
-}
-
-/* --- Ipam and Related Data Model -----------------------------------------*/
-
-/// Configuration settings of a given Ipam
-#[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
-pub struct IpamConfig {
-    /// When a host CIDR is added, 10.99.99.68/24, setting this field to true
-    /// will also add 10.99.99.0/24 if it is missing
-    pub add_missing_supernet: bool,
-}
-
-impl Default for IpamConfig {
-    fn default() -> Self {
-        IpamConfig {
-            add_missing_supernet: false,
-        }
-    }
-}
-
-
-pub struct CidrEntryResult{
-    pub cidr: IpNetwork,
-    pub id: String,
-}
-
-impl Ipam {
 
     pub (crate) fn children_of(&self, entry: IpNetwork) -> Vec<IpNetwork> {
         vec![]
     }
 
+    pub fn filter(&self, search: &str) -> Vec<&CidrEntry> {
+        self.cidrs.iter().filter(|&ce| 
+                match search {
+                    search if ce.cidr.to_string().contains(search) => true,
+                    search if ce.id.to_string().contains(search) => true,
+                    search if ce.uuid.to_string().contains(search) => true,
+                    search if ce.sysref.as_ref().unwrap().contains(search) => true,
+                    _ => false
+
+                }).collect()
+    }
+    
 
     /// Returns the ID, and the CIDR of the located entry
     /// need to optimise this (Tuple struct or something, to pin the type)
@@ -337,13 +257,9 @@ impl Ipam {
     }
 
     pub(crate) fn contains(&self, search: IpNetwork) -> bool {
-        for i in self.cidrs.iter() {
-            if i.cidr == search {
-                return true;
-            }
-        }
-        false
+        self.cidrs.iter().any(|ce| ce.cidr == search)
     }
+
 
     pub(crate) fn missing_supernets(&self) -> Vec<IpNetwork> {
         let mut results = vec![];
@@ -356,6 +272,135 @@ impl Ipam {
         results
     }
 }
+    
+impl Aggregate for Ipam {
+    fn aggregate_type() -> &'static str {
+        "Ipam"
+    }
+}
+
+impl From<&str> for Ipam {
+    fn from(s: &str) -> Ipam {
+        Ipam::new(s)
+    }
+}
+
+/* --- CidrEntry -----------------------------------------*/
+
+#[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
+pub struct CidrEntry {
+    pub cidr: IpNetwork,
+    pub id: CidrId,
+    pub uuid: Uuid,
+    pub sysref: Option<String>,
+    pub parent: Option<CidrId>,
+    pub attributes: HashSet<Label>, // would like to support a nested set of attributes here ideally
+}
+
+impl Default for CidrEntry {
+    fn default() -> Self {
+        CidrEntry {
+            cidr: "::0/0".parse().unwrap(),
+            ..Default::default()
+        }
+    }
+}
+
+impl CidrEntry { 
+ 
+    /// Create a Cidr Entry from str
+    /// Optional extras and sets of attributes can be provided
+    /// also
+    pub fn try_from_with_extras(
+        s: &str,  
+        id: Option<String>,
+        sysref: Option<String>,
+        attributes: HashSet<Label>    
+        ) -> Result<CidrEntry, IpamError> {
+
+        let cidr: IpNetwork = s.parse()?;
+        let mut cidr_entry = match cidr {
+            IpNetwork::V4(_v4) => CidrEntry::from(cidr),
+            IpNetwork::V6(_v6) => CidrEntry::from(cidr),
+        };
+
+        // id is set to a default value, change if supplied
+        id.into_iter().for_each(|i| cidr_entry.id = Box::new(i));
+        cidr_entry.sysref = sysref;
+        cidr_entry.attributes = attributes;
+        Ok(cidr_entry)
+    }
+
+
+}
+
+// #[derive(Hash, Eq, PartialEq, Serialize, Deserialize, Debug)]
+// pub enum AttributeEntry {
+//     Attr(Label),
+//     SetOfAttr(HashSet<AttributeEntry>),
+// }
+
+impl From<IpNetwork> for CidrEntry {
+    fn from(cidr: IpNetwork) -> CidrEntry {
+        let theuuid = Uuid::new_v4();
+
+        CidrEntry {
+            cidr,
+            id: Box::new(format!("{}_{}", theuuid, cidr)),
+            uuid: theuuid,
+            sysref: None,
+            parent: None,
+            attributes: HashSet::default(),
+        }
+    }
+}
+
+impl TryFrom<&str> for CidrEntry {
+    type Error = IpamError;
+
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
+        let cidr: IpNetwork = s.parse()?;
+        match cidr {
+            IpNetwork::V4(_v4) => Ok(CidrEntry::from(cidr)),
+            IpNetwork::V6(_v6) => Ok(CidrEntry::from(cidr)),
+        }
+    }
+
+}
+
+impl From<IpAddr> for CidrEntry {
+    fn from(addr: IpAddr) -> CidrEntry {
+        match addr {
+            IpAddr::V4(a) => CidrEntry::from(IpNetwork::V4(Ipv4Network::from(a))),
+            IpAddr::V6(a) => CidrEntry::from(IpNetwork::V6(Ipv6Network::from(a))),
+        }
+    }
+}
+
+/* --- Ipam and Related Data Model -----------------------------------------*/
+
+/// Configuration settings of a given Ipam
+#[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
+pub struct IpamConfig {
+    /// When a host CIDR is added, 10.99.99.68/24, setting this field to true
+    /// will also add 10.99.99.0/24 if it is missing
+    pub add_missing_supernet: bool,
+}
+
+impl Default for IpamConfig {
+    fn default() -> Self {
+        IpamConfig {
+            add_missing_supernet: false,
+        }
+    }
+}
+
+
+pub struct CidrEntryResult{
+    pub cidr: IpNetwork,
+    pub id: CidrId,
+}
+
 
 /* --- Tests -----------------------------------------*/
 #[cfg(test)]
@@ -380,7 +425,7 @@ mod tests {
     fn test_basic_cidr_entry() {
         let x = CidrEntry::try_from("10.2.2.1/21").expect("failure abound");
 
-        assert_eq!(x.id, format!("{}_{}", x.uuid, "10.2.2.1/21"));
+        assert_eq!(x.id, Box::new(format!("{}_{}", x.uuid, "10.2.2.1/21")));
         assert_eq!(x.cidr.is_ipv4(), true);
     }
 
@@ -416,6 +461,42 @@ mod tests {
         let _ = ipam.add_entry(cidr_entry);
         let expected_result = vec![IpNetwork::try_from("192.168.5.0/24").unwrap()];
         assert_eq!(ipam.missing_supernets()[0], expected_result[0])
+    }
+
+
+    #[test]
+    fn test_find() {
+        let mut ipam = Ipam::new_with_protcol("My Ipam", IPProtocolFamily::V4);
+
+        let special_one = Box::new(String::from("Network_Object_12345"));
+        for i in 100..110 {
+            let net4 = get_net4_address();
+            let mut cidr_entry = CidrEntry::from(IpNetwork::from(net4));
+            cidr_entry.sysref = Some(format!("xtref::some_id_{}",i));
+            if (i == 5) {
+                cidr_entry.id = special_one.clone();
+                cidr_entry.sysref = None;
+            }
+            let _ = ipam.add_entry(cidr_entry);
+
+        }
+
+        // check we can find one by some string
+        assert!(ipam.find("some_id_107").is_some());
+
+        // check we can get "all" of them
+        assert_eq!(ipam.filter("ref::some").len(),10);
+
+        assert_eq!(ipam.filter("xtref::some_id_").len(),10);
+
+        // lets find a single one by an Id
+        let ce = ipam.find(&special_one);
+        assert!(ce.is_some());
+
+        let found_special = ce.unwrap_or_default();
+        assert_eq!(None, found_special.sysref);
+        assert_eq!(special_one, found_special.id);
+
     }
 
     use std::fs::File;

@@ -5,9 +5,8 @@ random_ip = $(shell python3 -c 'import random; import socket; import struct; pri
 random_id = $(shell cat /proc/sys/kernel/random/uuid | cut -f5 -d-)
 random_uuid = $(shell cat /proc/sys/kernel/random/uuid)
 
-
 test-init:
-	  curl -X POST -d '{"id": "ipam_1234", "protocol" : "V4"}' http://127.0.0.1:9090/ipam/createIpam/ipam_1234
+	curl -H "Content-Type: application/json" -X POST -d '{"uuid": "195c5076-2c8f-4bed-94ae-79b11c39968c", "id": "ipam_1234", "protocol" : "V4"}' http://127.0.0.1:9090/api/ipam
 test:
-	  jq -n '{"cidr": "$(call random_ip)","id": "$(call random_id)", "sysref":null, "attributes":[ ]}' | curl -X POST -d@- http://127.0.0.1:9090/ipam/addCidrEntry/ipam_1234
+	jq -n '{"uuid": "$(call random_uuid)", "cidr": "$(call random_ip)","id": "$(call random_id)", "sysref":null, "attributes":[ ]}' | curl -H "Content-Type: application/json" -X POST -d@- http://127.0.0.1:9090/api/ipam/195c5076-2c8f-4bed-94ae-79b11c39968c/cidrs
 	

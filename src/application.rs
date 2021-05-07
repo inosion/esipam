@@ -18,7 +18,7 @@ mod simple_application_tests {
         println!(">> Running the single ID line check");
         let cqrs = CqrsFramework::new(event_store, vec![Box::new(query)]);
         println!(">> Running the single ID line check");
-        let res = cqrs.execute(Uuid::new_v4().to_string().as_str(), CreateNewIpam { id: String::from("test_ipam collection"), protocol: IPProtocolFamily::V6, cfg: None }).unwrap();
+        let res = cqrs.execute(Uuid::new_v4().to_string().as_str(), CreateNewIpam { id: String::from("test_ipam collection"), protocol: IPProtocolFamily::V6, ..Default::default()}).unwrap();
         println!(">> Running the single ID line check");
         res
     }

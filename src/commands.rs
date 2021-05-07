@@ -2,13 +2,14 @@ use cqrs_es::{AggregateError, Command};
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashSet;
-use std::convert::TryFrom;
+// use std::convert::TryFrom;
 use std::str::FromStr;
 use ipnetwork::IpNetwork;
+use uuid::Uuid;
 
 use crate::ipam_model::{Ipam, IPProtocolFamily, Label, IpamConfig, CidrEntry};
 use crate::events::{IpamEvent, IpamCreated, CidrEntryAdded};
-use crate::common::IpamError;
+// use crate::error::IpamError;
 
 // #[derive(Serialize, Deserialize)]
 // pub struct AddAttributeToCidrEntry {
@@ -47,9 +48,10 @@ use crate::common::IpamError;
 // }
 
 /* ---- Creating new Ipam ------------------------ */
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct CreateNewIpam {
     pub id: String,
+    pub uuid: Uuid,
     pub protocol: IPProtocolFamily,
     pub cfg: Option<IpamConfig>,
 }
@@ -57,10 +59,13 @@ pub struct CreateNewIpam {
 impl Command<Ipam, IpamEvent> for CreateNewIpam {
     fn handle(self, ipam: &Ipam) -> Result<Vec<IpamEvent>, AggregateError> {
 
-        println!("- Create new IPAM");
+        
+
+
+        println!(":: Create new IPAM [{}, {}]",self.id, self.uuid);
         
         let event_payload = IpamCreated  {
-            uuid: ipam.uuid,
+            uuid: self.uuid,
             id: self.id,
             protocol: self.protocol,
             cfg: self.cfg
@@ -83,9 +88,10 @@ impl Command<Ipam, IpamEvent> for CreateNewIpam {
 // }
 
 /* ---- Adding and Removing Cidr Entries ------------------------ */
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct AddCidrEntry {
     pub cidr: String,
+    pub uuid: Uuid,
     pub id: Option<String>,
     pub sysref: Option<String>,
     pub attributes: HashSet<Label>    
