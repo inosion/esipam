@@ -47,3 +47,8 @@ Looking for an equivalent to Pythons `pytricia`
 - Validation of Attributes
 - Complex Queries for locating
 
+
+## tooling
+
+- use optic for API detection
+- use OPA for validation

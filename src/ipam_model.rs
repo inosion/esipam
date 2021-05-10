@@ -464,7 +464,6 @@ mod tests {
     }
 
 
-    #[test]
     fn test_find() {
         let mut ipam = Ipam::new_with_protcol("My Ipam", IPProtocolFamily::V4);
 
@@ -514,13 +513,13 @@ mod tests {
         assert_eq!(ipam.cidrs.len(), 100);
 
         let json = serde_json::to_string_pretty(&ipam).expect("Should have worked");
-        let mut f = File::create("assets/sample_ipam.json").expect("can't write the new file");
+        let mut f = File::create("target/sample_ipam.json").expect("can't write the new file");
         f.write_all(json.as_bytes()).expect("Was meant to error");
 
         let missing =
             serde_json::to_string_pretty(&ipam.missing_supernets()).expect("Failure bro!");
         let mut f =
-            File::create("assets/missing_supernets.json").expect("can't write the new file");
+            File::create("target/missing_supernets.json").expect("can't write the new file");
         f.write_all(missing.as_bytes()).expect("Was meant to error")
     }
 }
