@@ -1,0 +1,808 @@
+{
+  "id": "My Ipam",
+  "uuid": "d86e798a-7ae8-46b4-9c2e-534b85c1e97b",
+  "protocol": "V4",
+  "cidrs": [
+    {
+      "cidr": "60.134.168.58/26",
+      "id": "d0de6c2f-fd5f-49d8-8cbc-12e5e5fae834_60.134.168.58/26",
+      "uuid": "d0de6c2f-fd5f-49d8-8cbc-12e5e5fae834",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "163.96.156.182/31",
+      "id": "37b35378-9208-41f8-90cb-6e0d5d0d0d0c_163.96.156.182/31",
+      "uuid": "37b35378-9208-41f8-90cb-6e0d5d0d0d0c",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "11.160.192.94/22",
+      "id": "1fb3d28a-c460-48f0-827e-be155b1bb7e4_11.160.192.94/22",
+      "uuid": "1fb3d28a-c460-48f0-827e-be155b1bb7e4",
+      "sysref": null,
+      "parent": "9c4dbe2b-28e2-4c00-8983-aeafacc27566_11.152.177.27/6",
+      "attributes": []
+    },
+    {
+      "cidr": "243.81.35.53/14",
+      "id": "edc175b1-27cc-4eb8-9ac5-dc94fa5bfdae_243.81.35.53/14",
+      "uuid": "edc175b1-27cc-4eb8-9ac5-dc94fa5bfdae",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "132.127.10.13/31",
+      "id": "7672e23b-926f-4de9-a225-8268542227bd_132.127.10.13/31",
+      "uuid": "7672e23b-926f-4de9-a225-8268542227bd",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "98.182.224.53/21",
+      "id": "d8137708-5672-4e3a-9a5b-3588129eb0a3_98.182.224.53/21",
+      "uuid": "d8137708-5672-4e3a-9a5b-3588129eb0a3",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "200.218.137.86/11",
+      "id": "a85af8f0-a1b0-4d02-bd61-0575733e33cd_200.218.137.86/11",
+      "uuid": "a85af8f0-a1b0-4d02-bd61-0575733e33cd",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "226.25.20.149/8",
+      "id": "9638a83f-3cd5-4555-9a5e-fab8d9fbd3c4_226.25.20.149/8",
+      "uuid": "9638a83f-3cd5-4555-9a5e-fab8d9fbd3c4",
+      "sysref": null,
+      "parent": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "attributes": []
+    },
+    {
+      "cidr": "106.100.194.5/6",
+      "id": "d98c0e75-4ce0-4685-938b-65e5ef27b91c_106.100.194.5/6",
+      "uuid": "d98c0e75-4ce0-4685-938b-65e5ef27b91c",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "51.126.3.242/27",
+      "id": "2cab633d-7584-4708-8f5a-408a96bf299f_51.126.3.242/27",
+      "uuid": "2cab633d-7584-4708-8f5a-408a96bf299f",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "206.246.148.203/18",
+      "id": "a3a10ab6-d1ab-42a8-b7de-81c12447b415_206.246.148.203/18",
+      "uuid": "a3a10ab6-d1ab-42a8-b7de-81c12447b415",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "193.174.1.44/27",
+      "id": "29649125-4e84-4cd8-a2c0-0844fbd672e9_193.174.1.44/27",
+      "uuid": "29649125-4e84-4cd8-a2c0-0844fbd672e9",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "72.221.239.65/7",
+      "id": "2bfbd49b-2649-40a1-855f-1399338b1f6c_72.221.239.65/7",
+      "uuid": "2bfbd49b-2649-40a1-855f-1399338b1f6c",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "220.36.227.26/11",
+      "id": "12bf276b-ea6a-4ea4-8937-b9f858b8e078_220.36.227.26/11",
+      "uuid": "12bf276b-ea6a-4ea4-8937-b9f858b8e078",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "221.57.20.56/21",
+      "id": "4686df17-a8d5-450f-b341-0454664887a6_221.57.20.56/21",
+      "uuid": "4686df17-a8d5-450f-b341-0454664887a6",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "101.107.49.86/21",
+      "id": "b5f460e7-2091-482a-957f-10ebd5320bf3_101.107.49.86/21",
+      "uuid": "b5f460e7-2091-482a-957f-10ebd5320bf3",
+      "sysref": null,
+      "parent": "b501be80-5727-4de9-aa2f-c0ec1f1995e2_100.169.229.3/6",
+      "attributes": []
+    },
+    {
+      "cidr": "34.91.162.36/26",
+      "id": "f407d084-b74a-4d53-b857-ff67c181eb6a_34.91.162.36/26",
+      "uuid": "f407d084-b74a-4d53-b857-ff67c181eb6a",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "46.235.240.90/4",
+      "id": "c45c6794-d34a-4655-9022-7cfb8440bfaa_46.235.240.90/4",
+      "uuid": "c45c6794-d34a-4655-9022-7cfb8440bfaa",
+      "sysref": null,
+      "parent": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "attributes": []
+    },
+    {
+      "cidr": "202.232.227.154/14",
+      "id": "2159a2a6-0b77-4c59-adc8-f0ad6d710887_202.232.227.154/14",
+      "uuid": "2159a2a6-0b77-4c59-adc8-f0ad6d710887",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "204.41.44.80/29",
+      "id": "a358e9af-dbec-4877-a418-3f65bd5d5af9_204.41.44.80/29",
+      "uuid": "a358e9af-dbec-4877-a418-3f65bd5d5af9",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "16.56.40.138/18",
+      "id": "973a4b2c-9c28-4619-bd0f-902c65cc2344_16.56.40.138/18",
+      "uuid": "973a4b2c-9c28-4619-bd0f-902c65cc2344",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "251.135.196.126/18",
+      "id": "a04fc1cd-fe30-494b-a135-b9836161af58_251.135.196.126/18",
+      "uuid": "a04fc1cd-fe30-494b-a135-b9836161af58",
+      "sysref": null,
+      "parent": "ae473a86-4849-416d-bc1a-153622f6c498_250.218.52.111/6",
+      "attributes": []
+    },
+    {
+      "cidr": "34.12.246.37/23",
+      "id": "879d9f5a-44d0-496d-93c0-498b8a4e0946_34.12.246.37/23",
+      "uuid": "879d9f5a-44d0-496d-93c0-498b8a4e0946",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "5.227.36.99/8",
+      "id": "9394b33f-a42c-4d9c-a5aa-0454d79aa5a9_5.227.36.99/8",
+      "uuid": "9394b33f-a42c-4d9c-a5aa-0454d79aa5a9",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "42.14.17.194/7",
+      "id": "2ffc23da-e1bf-477d-8c62-b173797109c8_42.14.17.194/7",
+      "uuid": "2ffc23da-e1bf-477d-8c62-b173797109c8",
+      "sysref": null,
+      "parent": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "attributes": []
+    },
+    {
+      "cidr": "150.206.190.6/29",
+      "id": "bed653f8-34f2-4307-8c65-937dec958237_150.206.190.6/29",
+      "uuid": "bed653f8-34f2-4307-8c65-937dec958237",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "184.154.116.137/7",
+      "id": "9ca73f4d-667d-4abc-898d-abf227544e56_184.154.116.137/7",
+      "uuid": "9ca73f4d-667d-4abc-898d-abf227544e56",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "179.193.209.179/22",
+      "id": "89dc0ddc-ae1e-4876-930f-bd148d986027_179.193.209.179/22",
+      "uuid": "89dc0ddc-ae1e-4876-930f-bd148d986027",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "56.207.206.198/10",
+      "id": "827556e4-6085-404b-8586-28022016ac56_56.207.206.198/10",
+      "uuid": "827556e4-6085-404b-8586-28022016ac56",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "32.241.25.224/29",
+      "id": "7cb25202-ef40-43b1-aef2-bd13d712b389_32.241.25.224/29",
+      "uuid": "7cb25202-ef40-43b1-aef2-bd13d712b389",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "101.172.202.217/10",
+      "id": "1ffee3bc-8b77-40ae-90ae-c6e86c2becce_101.172.202.217/10",
+      "uuid": "1ffee3bc-8b77-40ae-90ae-c6e86c2becce",
+      "sysref": null,
+      "parent": "b501be80-5727-4de9-aa2f-c0ec1f1995e2_100.169.229.3/6",
+      "attributes": []
+    },
+    {
+      "cidr": "194.5.161.177/8",
+      "id": "0cf78707-4b1b-49a4-a287-597952cbabff_194.5.161.177/8",
+      "uuid": "0cf78707-4b1b-49a4-a287-597952cbabff",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "164.30.171.168/8",
+      "id": "94302451-dceb-4239-a9cf-4d81a05192df_164.30.171.168/8",
+      "uuid": "94302451-dceb-4239-a9cf-4d81a05192df",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "35.40.135.119/4",
+      "id": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "uuid": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "203.81.185.242/18",
+      "id": "96eb9d12-f0d7-4d0c-b081-b43e078e9b86_203.81.185.242/18",
+      "uuid": "96eb9d12-f0d7-4d0c-b081-b43e078e9b86",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "21.250.211.55/11",
+      "id": "c39fc62e-9e6a-4575-b7c0-685bc756cca6_21.250.211.55/11",
+      "uuid": "c39fc62e-9e6a-4575-b7c0-685bc756cca6",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "36.72.10.80/10",
+      "id": "ebae35c3-5518-48b2-99d5-c260c2e6f1b0_36.72.10.80/10",
+      "uuid": "ebae35c3-5518-48b2-99d5-c260c2e6f1b0",
+      "sysref": null,
+      "parent": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "attributes": []
+    },
+    {
+      "cidr": "12.170.141.53/19",
+      "id": "5c5bb72e-819f-4ead-933c-6408cc31f3f4_12.170.141.53/19",
+      "uuid": "5c5bb72e-819f-4ead-933c-6408cc31f3f4",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "117.125.76.12/4",
+      "id": "1abc9d7e-b387-4111-a089-aabf31e4b91c_117.125.76.12/4",
+      "uuid": "1abc9d7e-b387-4111-a089-aabf31e4b91c",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "161.217.169.232/10",
+      "id": "0359f612-04fc-4873-bf41-4471f488e470_161.217.169.232/10",
+      "uuid": "0359f612-04fc-4873-bf41-4471f488e470",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "22.176.77.133/30",
+      "id": "ec0d5b03-2c4d-437c-b164-8f3dc7b91ac2_22.176.77.133/30",
+      "uuid": "ec0d5b03-2c4d-437c-b164-8f3dc7b91ac2",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "225.162.165.66/4",
+      "id": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "uuid": "d26c6e82-aa1a-4085-b1b1-5ca15d508503",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "239.222.188.35/8",
+      "id": "afb75596-eb81-4533-ada0-9784d19b1be2_239.222.188.35/8",
+      "uuid": "afb75596-eb81-4533-ada0-9784d19b1be2",
+      "sysref": null,
+      "parent": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "attributes": []
+    },
+    {
+      "cidr": "96.101.249.37/14",
+      "id": "66c0b82c-c250-4981-8feb-9d888e10458f_96.101.249.37/14",
+      "uuid": "66c0b82c-c250-4981-8feb-9d888e10458f",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "148.96.98.112/11",
+      "id": "8ef0a353-6922-4be4-b784-f0460a2cba41_148.96.98.112/11",
+      "uuid": "8ef0a353-6922-4be4-b784-f0460a2cba41",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "236.88.58.112/31",
+      "id": "b34e836d-e0d3-49d8-b4dd-c1e2c0a7918b_236.88.58.112/31",
+      "uuid": "b34e836d-e0d3-49d8-b4dd-c1e2c0a7918b",
+      "sysref": null,
+      "parent": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "attributes": []
+    },
+    {
+      "cidr": "9.225.189.33/26",
+      "id": "8f7d68c3-fb76-4ff7-8cb5-36b8678e82f3_9.225.189.33/26",
+      "uuid": "8f7d68c3-fb76-4ff7-8cb5-36b8678e82f3",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "130.30.251.159/29",
+      "id": "2b0c387a-01d9-4dcc-b193-2fd6b781c5d4_130.30.251.159/29",
+      "uuid": "2b0c387a-01d9-4dcc-b193-2fd6b781c5d4",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "112.233.117.254/31",
+      "id": "a5e279d3-0fe5-45e0-825d-f081849f881e_112.233.117.254/31",
+      "uuid": "a5e279d3-0fe5-45e0-825d-f081849f881e",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "178.2.76.40/8",
+      "id": "6685c012-4368-4bc3-849b-722abde7be2f_178.2.76.40/8",
+      "uuid": "6685c012-4368-4bc3-849b-722abde7be2f",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "11.152.177.27/6",
+      "id": "9c4dbe2b-28e2-4c00-8983-aeafacc27566_11.152.177.27/6",
+      "uuid": "9c4dbe2b-28e2-4c00-8983-aeafacc27566",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "158.4.6.3/28",
+      "id": "eccf4235-3fc9-43d8-b46b-c65bf2a0ed0d_158.4.6.3/28",
+      "uuid": "eccf4235-3fc9-43d8-b46b-c65bf2a0ed0d",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "142.2.237.68/19",
+      "id": "30f5171b-1ef9-4959-8091-de3191d7a1ff_142.2.237.68/19",
+      "uuid": "30f5171b-1ef9-4959-8091-de3191d7a1ff",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "73.211.126.253/21",
+      "id": "b516dfb9-bb5a-45f3-8486-8d19adb91db1_73.211.126.253/21",
+      "uuid": "b516dfb9-bb5a-45f3-8486-8d19adb91db1",
+      "sysref": null,
+      "parent": "2bfbd49b-2649-40a1-855f-1399338b1f6c_72.221.239.65/7",
+      "attributes": []
+    },
+    {
+      "cidr": "246.28.148.245/6",
+      "id": "82c6f042-17ef-40d8-b421-14254bf1f808_246.28.148.245/6",
+      "uuid": "82c6f042-17ef-40d8-b421-14254bf1f808",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "240.50.145.138/21",
+      "id": "0e6cf482-6607-455e-87db-2d60a16a0300_240.50.145.138/21",
+      "uuid": "0e6cf482-6607-455e-87db-2d60a16a0300",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "72.166.42.138/19",
+      "id": "9f8e0a9e-05d7-4297-b436-681e4803bcdd_72.166.42.138/19",
+      "uuid": "9f8e0a9e-05d7-4297-b436-681e4803bcdd",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "12.161.77.49/14",
+      "id": "da94b595-64e8-4e54-9a6c-b3bad93789c6_12.161.77.49/14",
+      "uuid": "da94b595-64e8-4e54-9a6c-b3bad93789c6",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "173.56.251.36/8",
+      "id": "83c9e9dc-38ff-4978-b2ba-2732e34dbe54_173.56.251.36/8",
+      "uuid": "83c9e9dc-38ff-4978-b2ba-2732e34dbe54",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "100.169.229.3/6",
+      "id": "b501be80-5727-4de9-aa2f-c0ec1f1995e2_100.169.229.3/6",
+      "uuid": "b501be80-5727-4de9-aa2f-c0ec1f1995e2",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "40.179.114.179/13",
+      "id": "59eb3c6c-2910-4f37-84d8-7c3f87ad2105_40.179.114.179/13",
+      "uuid": "59eb3c6c-2910-4f37-84d8-7c3f87ad2105",
+      "sysref": null,
+      "parent": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "attributes": []
+    },
+    {
+      "cidr": "101.218.29.39/27",
+      "id": "679de9ca-0474-45f4-96c6-e1d76c2ea424_101.218.29.39/27",
+      "uuid": "679de9ca-0474-45f4-96c6-e1d76c2ea424",
+      "sysref": null,
+      "parent": "b501be80-5727-4de9-aa2f-c0ec1f1995e2_100.169.229.3/6",
+      "attributes": []
+    },
+    {
+      "cidr": "85.80.71.148/26",
+      "id": "6de30adb-3266-4d27-b548-d0c33b3db08e_85.80.71.148/26",
+      "uuid": "6de30adb-3266-4d27-b548-d0c33b3db08e",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "187.109.129.198/8",
+      "id": "06facd49-f0a0-4839-8e37-2c76ecb892ea_187.109.129.198/8",
+      "uuid": "06facd49-f0a0-4839-8e37-2c76ecb892ea",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "66.249.223.11/31",
+      "id": "01e36ddb-0f29-4ecf-b1e8-3e1444f112b2_66.249.223.11/31",
+      "uuid": "01e36ddb-0f29-4ecf-b1e8-3e1444f112b2",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "225.32.155.156/11",
+      "id": "324e6d94-0b2d-434a-a3d0-0b84ca3a582e_225.32.155.156/11",
+      "uuid": "324e6d94-0b2d-434a-a3d0-0b84ca3a582e",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "67.97.31.149/22",
+      "id": "f67b2bf0-9225-4e15-9166-ae34a12f96e3_67.97.31.149/22",
+      "uuid": "f67b2bf0-9225-4e15-9166-ae34a12f96e3",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "111.98.69.146/20",
+      "id": "815142d4-c450-4a67-a881-5c3095e0e67d_111.98.69.146/20",
+      "uuid": "815142d4-c450-4a67-a881-5c3095e0e67d",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "210.68.154.123/16",
+      "id": "57e2e40e-ba01-44e4-80aa-f7db02f5e7f9_210.68.154.123/16",
+      "uuid": "57e2e40e-ba01-44e4-80aa-f7db02f5e7f9",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "254.121.142.19/26",
+      "id": "f92a0a80-5bd0-424b-8a8d-a2cfd5b7763d_254.121.142.19/26",
+      "uuid": "f92a0a80-5bd0-424b-8a8d-a2cfd5b7763d",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "225.164.193.126/31",
+      "id": "80880e56-a4f7-4951-a511-5a79ef69474e_225.164.193.126/31",
+      "uuid": "80880e56-a4f7-4951-a511-5a79ef69474e",
+      "sysref": null,
+      "parent": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "attributes": []
+    },
+    {
+      "cidr": "80.133.189.110/9",
+      "id": "e0f987f2-c4e9-41c0-aa9d-41dc905a9a65_80.133.189.110/9",
+      "uuid": "e0f987f2-c4e9-41c0-aa9d-41dc905a9a65",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "239.176.142.246/28",
+      "id": "88f16594-a86d-43c3-867d-229ea9d6009b_239.176.142.246/28",
+      "uuid": "88f16594-a86d-43c3-867d-229ea9d6009b",
+      "sysref": null,
+      "parent": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "attributes": []
+    },
+    {
+      "cidr": "39.209.95.32/7",
+      "id": "8a0ec7a8-a05d-43d8-88f2-77c62fcb73df_39.209.95.32/7",
+      "uuid": "8a0ec7a8-a05d-43d8-88f2-77c62fcb73df",
+      "sysref": null,
+      "parent": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "attributes": []
+    },
+    {
+      "cidr": "155.15.150.220/13",
+      "id": "3d6b3b67-a29d-4fac-b947-be5c3b6ead16_155.15.150.220/13",
+      "uuid": "3d6b3b67-a29d-4fac-b947-be5c3b6ead16",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "179.196.231.211/8",
+      "id": "f8d25a6b-01cc-4e46-ab9f-feef55d99f9b_179.196.231.211/8",
+      "uuid": "f8d25a6b-01cc-4e46-ab9f-feef55d99f9b",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "135.250.153.203/11",
+      "id": "a5f832aa-cf9d-4e92-821c-375ac1649039_135.250.153.203/11",
+      "uuid": "a5f832aa-cf9d-4e92-821c-375ac1649039",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "45.143.142.208/28",
+      "id": "729d5eac-4f92-420e-be51-e4017280d7dd_45.143.142.208/28",
+      "uuid": "729d5eac-4f92-420e-be51-e4017280d7dd",
+      "sysref": null,
+      "parent": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "attributes": []
+    },
+    {
+      "cidr": "124.179.124.2/25",
+      "id": "4735c88a-deb9-4a88-b5bd-40692c432d58_124.179.124.2/25",
+      "uuid": "4735c88a-deb9-4a88-b5bd-40692c432d58",
+      "sysref": null,
+      "parent": "1abc9d7e-b387-4111-a089-aabf31e4b91c_117.125.76.12/4",
+      "attributes": []
+    },
+    {
+      "cidr": "35.20.86.207/31",
+      "id": "6b3ef1e8-bf63-4201-b665-4c784972b121_35.20.86.207/31",
+      "uuid": "6b3ef1e8-bf63-4201-b665-4c784972b121",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "232.11.7.145/27",
+      "id": "bc695d43-a0a0-438d-96ff-cca8b8c03d6f_232.11.7.145/27",
+      "uuid": "bc695d43-a0a0-438d-96ff-cca8b8c03d6f",
+      "sysref": null,
+      "parent": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "attributes": []
+    },
+    {
+      "cidr": "217.133.219.207/23",
+      "id": "f8713391-091e-4bcb-be45-def16c1b969b_217.133.219.207/23",
+      "uuid": "f8713391-091e-4bcb-be45-def16c1b969b",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "8.78.37.103/20",
+      "id": "b056c63e-3216-4835-b3a0-624f908dcb0a_8.78.37.103/20",
+      "uuid": "b056c63e-3216-4835-b3a0-624f908dcb0a",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "210.222.192.87/14",
+      "id": "d6d2cb15-9cfa-485a-ab58-3a727f8276ee_210.222.192.87/14",
+      "uuid": "d6d2cb15-9cfa-485a-ab58-3a727f8276ee",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "33.63.193.188/30",
+      "id": "4cbbb3c7-d16c-4666-8bd1-c076ad5ec8be_33.63.193.188/30",
+      "uuid": "4cbbb3c7-d16c-4666-8bd1-c076ad5ec8be",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "215.18.35.152/12",
+      "id": "de622b38-bfd7-4ab2-82c9-85958e37a3eb_215.18.35.152/12",
+      "uuid": "de622b38-bfd7-4ab2-82c9-85958e37a3eb",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "133.102.200.163/10",
+      "id": "0527155e-9944-4899-aeae-b237cf8be51e_133.102.200.163/10",
+      "uuid": "0527155e-9944-4899-aeae-b237cf8be51e",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "250.218.52.111/6",
+      "id": "ae473a86-4849-416d-bc1a-153622f6c498_250.218.52.111/6",
+      "uuid": "ae473a86-4849-416d-bc1a-153622f6c498",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "116.5.183.252/30",
+      "id": "ee8c99ff-b5ff-4ad3-b39c-b5ef68da5732_116.5.183.252/30",
+      "uuid": "ee8c99ff-b5ff-4ad3-b39c-b5ef68da5732",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "93.18.50.234/27",
+      "id": "4b99c7b7-c25b-48bb-be3d-2178c78e61b9_93.18.50.234/27",
+      "uuid": "4b99c7b7-c25b-48bb-be3d-2178c78e61b9",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "163.197.35.182/14",
+      "id": "b4a78a72-68ac-4ebb-b642-088b99c85199_163.197.35.182/14",
+      "uuid": "b4a78a72-68ac-4ebb-b642-088b99c85199",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "149.166.245.186/30",
+      "id": "d254992e-af66-4ca0-97cb-b9e3f21f5db6_149.166.245.186/30",
+      "uuid": "d254992e-af66-4ca0-97cb-b9e3f21f5db6",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "168.188.133.45/22",
+      "id": "c5daa64a-214a-45cc-b16b-d705b671ee9a_168.188.133.45/22",
+      "uuid": "c5daa64a-214a-45cc-b16b-d705b671ee9a",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "121.93.100.193/12",
+      "id": "42571017-28a0-468f-a917-fc8a1835349b_121.93.100.193/12",
+      "uuid": "42571017-28a0-468f-a917-fc8a1835349b",
+      "sysref": null,
+      "parent": "1abc9d7e-b387-4111-a089-aabf31e4b91c_117.125.76.12/4",
+      "attributes": []
+    },
+    {
+      "cidr": "73.123.60.210/31",
+      "id": "15dd35a9-a19d-485f-80fb-ddaef4de9356_73.123.60.210/31",
+      "uuid": "15dd35a9-a19d-485f-80fb-ddaef4de9356",
+      "sysref": null,
+      "parent": "2bfbd49b-2649-40a1-855f-1399338b1f6c_72.221.239.65/7",
+      "attributes": []
+    },
+    {
+      "cidr": "91.104.154.45/13",
+      "id": "d3773938-dd05-4f9e-ae6b-cba11c4bc207_91.104.154.45/13",
+      "uuid": "d3773938-dd05-4f9e-ae6b-cba11c4bc207",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "105.247.150.234/10",
+      "id": "ed3b6093-adc7-4107-8fd4-2b3783b5bff7_105.247.150.234/10",
+      "uuid": "ed3b6093-adc7-4107-8fd4-2b3783b5bff7",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "30.120.1.33/7",
+      "id": "e9654e3a-d255-4082-82f5-506ca1e088f1_30.120.1.33/7",
+      "uuid": "e9654e3a-d255-4082-82f5-506ca1e088f1",
+      "sysref": null,
+      "parent": null,
+      "attributes": []
+    },
+    {
+      "cidr": "39.76.215.70/28",
+      "id": "4a1f4297-464f-488d-99a4-df306c8530f4_39.76.215.70/28",
+      "uuid": "4a1f4297-464f-488d-99a4-df306c8530f4",
+      "sysref": null,
+      "parent": "c3a63975-9ce4-4f07-8a53-a4f9f7f45835_35.40.135.119/4",
+      "attributes": []
+    },
+    {
+      "cidr": "233.149.213.137/6",
+      "id": "82688704-7702-46e4-be8a-6868ed29463e_233.149.213.137/6",
+      "uuid": "82688704-7702-46e4-be8a-6868ed29463e",
+      "sysref": null,
+      "parent": "d26c6e82-aa1a-4085-b1b1-5ca15d508503_225.162.165.66/4",
+      "attributes": []
+    }
+  ],
+  "cfg": null
+}
