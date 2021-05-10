@@ -1,3 +1,4 @@
+.DEFAULT_GOAL = all
 .PHONY: test-init test live.test live.test-init
 
 
@@ -10,7 +11,8 @@ live.test-init:
 live.test:
 	jq -n '{"uuid": "$(call random_uuid)", "cidr": "$(call random_ip)","id": "$(call random_id)", "sysref":null, "attributes":[ ]}' | curl -H "Content-Type: application/json" -X POST -d@- http://127.0.0.1:9090/api/ipam/195c5076-2c8f-4bed-94ae-79b11c39968c/cidrs
 
-test:
+test: ## @test Run all Tests
 	cargo test
 	cargo deny check
-	
+
+include help.mk
