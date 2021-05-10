@@ -24,6 +24,15 @@ Simple Attribute Labelling
       
 ```
 
+## Running
+
+Alpha quality steps
+```
+docker-compose run -d
+cargo run
+make e2e.test
+```
+
 ## Ipam Data Structure
 
 The Ipam Data structure is simple enough.
