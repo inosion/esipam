@@ -58,7 +58,7 @@ CidrEntry --> CidrEntry : on parent (id of)
 # Vision / Epics
 
 - [X] Create the REST API and Datamodel
-- [ ] Create a Simple single site Aggregate Root for the ES-CQRS
+- [X] Create a Simple single site Aggregate Root for the ES-CQRS
 - [ ] Create a CLI
 - [ ] Create a UI to interact with
 - [ ] Create application/system/provider specific plugins
@@ -70,3 +70,4 @@ CidrEntry --> CidrEntry : on parent (id of)
   - [ ] Juniper
   - [ ] Cisco
   - [ ] Palo Alto
+- [ ] Create a backing store in etcd, other stores (journaldb etc)
